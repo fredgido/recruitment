@@ -26,13 +26,12 @@ from wtforms.validators import DataRequired
 
 from models import User, Role, Contest, Question, Answer
 
-UPLOAD_FOLDER = "All_Disciplines/ProgWeb/projeto/flask_auth/static/uploads"
+UPLOAD_FOLDER = "/uploads"
 # ALLOWED_EXTENSIONS = {"pdf", "png", "jpg", "jpeg", "docx"}
 
 
 app = Flask(__name__)
-app.config.from_pyfile("config.py")
-
+app.config.from_object("config.DevConfig" if os.environ.get("ENVIRONMENT") == "development" else "config.ProdConfig")
 db = SQLAlchemy(app)
 db.autoflush = True
 

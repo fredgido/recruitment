@@ -1,4 +1,5 @@
 /app/**/*.db
+/**/*.db
 !/app/example.db
 !.app
 # Created by .ignore support plugin (hsz.mobi)

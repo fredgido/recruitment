@@ -134,9 +134,6 @@ class Answer(db.Model):
         self.validated = validated
         self.juri_id = juri_id
         
-        
-
-
 
 class Result(db.Model):
     __tablename__ = "result"
@@ -147,7 +144,6 @@ class Result(db.Model):
     active = db.Column(db.Boolean, default=True)
     score = db.Column(db.Integer())
     validated = db.Column(db.Boolean)
-    juri_id = db.Column(db.String)
     juri_id = db.Column("juri_id", db.ForeignKey("user.id"))
     juri = db.relationship("User", backref=backref("result_juri", uselist=False), foreign_keys=[juri_id])
     createdAt = db.Column(db.DateTime, default=datetime.now)
