@@ -1,0 +1,164 @@
+{% extends 'master.html' %}
+
+{% block access_control %}
+<li class="sidebar-item">
+  <a class="sidebar-link" href="{{ url_for('users') }}">
+    <i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Utilizadores</span>
+  </a>
+</li>
+<li class="sidebar-item">
+  <a class="sidebar-link" href="{{ url_for('contests') }}">
+    <i class="align-middle" data-feather="calendar"></i> <span class="align-middle">Concursos</span>
+  </a>
+</li>
+<li class="sidebar-item">
+  <a class="sidebar-link" href="{{ url_for('candidatures') }}">
+    <i class="align-middle" data-feather="edit"></i> <span class="align-middle">Candidaturas</span>
+  </a>
+</li>
+<li class="sidebar-item">
+  <a class="sidebar-link" href="{{ url_for('results') }}">
+    <i class="align-middle" data-feather="award"></i> <span class="align-middle">Resultados</span>
+  </a>
+</li>
+{% endblock %}
+
+{% block body %}
+<div class="row mb-2 mb-xl-3">
+  <div class="col-auto d-none d-sm-block">
+    <h3>Formularios</h3>
+  </div>
+  {% for message in get_flashed_messages() %}
+  <div class="alert alert-primary" role="alert">
+    {{ message }}
+  </div>
+  {% endfor %}
+
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">{{ current_user.email }}</h5>
+          
+          <!-- ADMIN -->
+          {% if current_user.has_role('admin') %}
+            <h5 class="card-title mb-0"> Is admin</h5>
+
+            <div class="container">
+              <div class="table_outdiv">
+                <table class="table tabela_form">
+                  <tr>
+                    <th scope="col-s-auto">Nome concurso</th>
+                    <th scope="col-s-auto">Estado concurso</th>
+                    <th scope="col-s-auto">Estado formulario</th>
+                    <th scope="col-s-auto">Número perguntas</th>
+                    <th scope="col-s-auto">Data Inicio</th>
+                    <th scope="col-s-auto">Data Fim</th>
+                    {% if chosen_contest.questions_state == "Por criar" %} 
+                    <th scope="col-s-auto">Criar formulario</th>
+                    {% elif chosen_contest.questions_state == "Criado" %}
+                    <th scope="col-s-auto">Editar formulario</th>
+                    {% endif %}
+                  </tr>
+                  <tr>
+                    <td>{{ chosen_contest.name }}</td>
+                    <td>{% if chosen_contest.active == True %} <span class="badge bg-success">Ativo</span> {% else %} <span class="badge bg-warning">Inativo</span> {% endif %}</td>
+                    <td>
+                      {% if chosen_contest.questions_state == "Por criar" %} 
+                        <span class="badge bg-danger">Por criar</span> 
+                      {% elif chosen_contest.questions_state == "Criado" %}
+                        <span class="badge bg-warning">Criado</span>
+                      {% else %}
+                        <span class="badge bg-success">Submetido</span>
+                      {% endif %}
+                    </td>
+                    <td>{{ numero_perguntas }}</td>
+                    <td>{{ chosen_contest.dateStart.strftime('%d-%m-%Y') }}</td>
+                    <td>{{ chosen_contest.dateEnd.strftime('%d-%m-%Y') }}</td>
+                    {% if chosen_contest.questions_state == "Por criar" %}
+                      <td><a href="/formularios/criar/{{chosen_contest.id}}"><i class="size-26" data-feather="file-plus"></i></a></td>
+                    {% elif chosen_contest.questions_state == "Criado" %}
+                      <td><a href="/formularios/editar/{{chosen_contest.id}}"><i class="size-26" data-feather="edit-3"></i></a></td>
+                    {% endif %}
+                  </tr>
+                </table>
+              </div>
+            </div>
+
+            {% endif %}
+          
+
+          <!-- JURI -->
+          {% if current_user.has_role('juri') %}
+            <h5 class="card-title mb-0"> Is juri</h5>
+
+            <div class="container">
+              <div class="table_outdiv">
+                <table class="table tabela_form">
+                  <tr>
+                    <th scope="col-s-auto">Nome concurso</th>
+                    <th scope="col-s-auto">Estado concurso</th>
+                    <th scope="col-s-auto">Estado formulario</th>
+                    <th scope="col-s-auto">Número perguntas</th>
+                    <th scope="col-s-auto">Data Inicio</th>
+                    <th scope="col-s-auto">Data Fim</th>
+                    {% if chosen_contest.questions_state == "Por criar" %} 
+                    <th scope="col-s-auto">Criar formulario</th>
+                    {% elif chosen_contest.questions_state == "Criado" %}
+                    <th scope="col-s-auto">Editar formulario</th>
+                    {% endif %}
+                  </tr>
+                  <tr>
+                    <td>{{ chosen_contest.name }}</td>
+                    <td>{% if chosen_contest.active == True %} <span class="badge bg-success">Ativo</span> {% else %} <span class="badge bg-warning">Inativo</span> {% endif %}</td>
+                    <td>
+                      {% if chosen_contest.questions_state == "Por criar" %} 
+                        <span class="badge bg-danger">Por criar</span> 
+                      {% elif chosen_contest.questions_state == "Criado" %}
+                        <span class="badge bg-warning">Criado</span>
+                      {% else %}
+                        <span class="badge bg-success">Submetido</span>
+                      {% endif %}
+                    </td>
+                    <td>{{ numero_perguntas }}</td>
+                    <td>{{ chosen_contest.dateStart.strftime('%d-%m-%Y') }}</td>
+                    <td>{{ chosen_contest.dateEnd.strftime('%d-%m-%Y') }}</td>
+                    {% if chosen_contest.questions_state == "Por criar" %}
+                      <td><a href="/formularios/criar/{{chosen_contest.id}}"><i class="size-26" data-feather="file-plus"></i></a></td>
+                    {% elif chosen_contest.questions_state == "Criado" %}
+                      <td><a href="/formularios/editar/{{chosen_contest.id}}"><i class="size-26" data-feather="edit-3"></i></a></td>
+                    {% endif %}
+                  </tr>
+                </table>
+              </div>
+            </div>
+          {% endif %}
+
+          <!-- USER -->
+          {% if current_user.has_role('user') %}
+            <h5 class="card-title mb-0"> Is user</h5>
+          {% endif %}
+
+          <!-- GUEST -->
+          {% if not current_user.email %}
+            <h5 class="card-title mb-0"> Is guest</h5>
+          {% endif %}
+
+        </div>
+        <div class="card-body">
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endblock body %}
+
+  {% block tail %}
+  <script>
+    // timeout alert message
+    $(document).ready(function () {
+      setTimeout(function () {
+        $(".alert").alert('close')
+      }, 3000);
+    });
+  </script>
+  {% endblock tail %}

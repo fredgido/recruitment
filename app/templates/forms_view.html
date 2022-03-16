@@ -1,0 +1,144 @@
+{% extends 'master.html' %}
+
+{% block access_control %}
+<li class="sidebar-item">
+    <a class="sidebar-link" href="{{ url_for('users') }}">
+        <i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Utilizadores</span>
+    </a>
+</li>
+<li class="sidebar-item active">
+    <a class="sidebar-link" href="{{ url_for('contests') }}">
+        <i class="align-middle" data-feather="calendar"></i> <span class="align-middle">Concursos</span>
+    </a>
+</li>
+<li class="sidebar-item">
+    <a class="sidebar-link" href="{{ url_for('candidatures') }}">
+        <i class="align-middle" data-feather="edit"></i> <span class="align-middle">Candidaturas</span>
+    </a>
+</li>
+<li class="sidebar-item">
+    <a class="sidebar-link" href="{{ url_for('results') }}">
+        <i class="align-middle" data-feather="award"></i> <span class="align-middle">Resultados</span>
+    </a>
+</li>
+{% endblock %}
+
+{% block body %}
+<div class="row mb-2 mb-xl-3">
+    <div class="col-auto d-none d-sm-block">
+        <h3>Responder formulário</h3>
+    </div>
+    {{ formData }}
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-primary float-none" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">{{ current_user.email }}</h5>
+
+                    <!-- ADMIN -->
+                    {% if current_user.has_role('admin') %}
+                    <h5 class="card-title mb-0" id="idUser" >Nome usuario: {{ current_user.id }} </h5>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12 mb-4">
+                                <a class="btn btn-primary btn-lg float-end" id="saveFormBtn">Submeter</a>
+                            </div>
+                        </div>
+                        <div class="question-container">
+                            <div class="row">
+                                <div class="col-md-12">
+                                <!-- script data from backend-->
+                                <div style="visibility: hidden;" id="dataHidden"></div>
+                                <script>
+                                    var data = JSON.stringify(JSON.parse({{ objects_list | tojson | safe}}));
+                                    document.getElementById('dataHidden').innerHTML = data;
+                                </script>                           
+                                </div>
+                                <!-- end script-->
+                            </div>
+                        </div>                       
+                        <form method="post">
+                            <div id='card-requirements' class="list-group-item">
+                                <div id="container" data-form="{{ chosen_contest }}" >
+                                    
+                                </div>
+                            </div>
+                        </form>
+                    </div>           
+            {% endif %}
+
+            <!-- JURI -->
+            {% if current_user.has_role('juri') %}
+            <h5 class="card-title mb-0"> Is juri</h5>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 mb-4">
+                        <a class="btn btn-primary btn-lg float-end" href="">Guardar</a>
+                    </div>
+                </div>                
+                <div id='card-requirements' class="list-group-item">
+                    <div id="container">
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- USER -->
+            {% if current_user.has_role('user') %}
+            <h5 class="card-title mb-0" id="idUser" >Nome usuario: {{ current_user.id }} </h5>
+                <h5 class="card-title mb-0"> Is user</h5>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12 mb-4">
+                            <a class="btn btn-primary btn-lg float-end" id="saveFormBtn">Submeter</a>
+                        </div>
+                    </div>
+                    <div class="question-container">
+                        <div class="row">
+                            <div class="col-md-12">
+                            <!-- script data from backend-->
+                            <div style="visibility: hidden;" id="dataHidden"></div>
+                            <script>
+                                var data = JSON.stringify(JSON.parse({{ objects_list | tojson | safe}}));
+                                document.getElementById('dataHidden').innerHTML = data;
+                            </script>                           
+                            </div>
+                            <!-- end script-->
+                        </div>
+                    </div>                       
+                    <form method="post">
+                        <div id='card-requirements' class="list-group-item">
+                            <div id="container" data-form="{{ chosen_contest }}" >
+                                
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            {% endif %}
+
+            <!-- GUEST -->
+            {% if not current_user.email %}
+            <h5 class="card-title mb-0"> Is guest</h5>
+            {% endif %}
+        </div>
+        </div>    
+    </div>
+</div>
+</div>
+
+<!-- JavaScript link -->
+<script src="{{url_for('static', filename='js/respond.js')}}"></script>
+<script src="{{url_for('static', filename='js/dragula.min.js')}}"></script>
+<script>
+    dragula([document.getElementById("container")], {
+        removeOnSpill: false
+    });
+</script>
+
+{% endblock body %}

@@ -1,0 +1,203 @@
+{% extends 'master.html' %}
+
+{% block access_control %}
+<li class="sidebar-item">
+  <a class="sidebar-link" href="{{ url_for('users') }}">
+    <i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Utilizadores</span>
+  </a>
+</li>
+<li class="sidebar-item active">
+  <a class="sidebar-link" href="{{ url_for('contests') }}">
+    <i class="align-middle" data-feather="calendar"></i> <span class="align-middle">Concursos</span>
+  </a>
+</li>
+<li class="sidebar-item">
+  <a class="sidebar-link" href="{{ url_for('candidatures') }}">
+    <i class="align-middle" data-feather="edit"></i> <span class="align-middle">Candidaturas</span>
+  </a>
+</li>
+<li class="sidebar-item">
+  <a class="sidebar-link" href="{{ url_for('results') }}">
+    <i class="align-middle" data-feather="award"></i> <span class="align-middle">Resultados</span>
+  </a>
+</li>
+{% endblock %}
+
+{% block body %}
+<div class="row mb-2 mb-xl-3">
+  <div class="col-auto d-none d-sm-block">
+    <h3>Concursos</h3>
+  </div>
+
+  {% for message in get_flashed_messages() %}
+  <div class="alert alert-primary" role="alert">
+    {{ message }}
+  </div>
+  {% endfor %}
+
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">{{ current_user.email }}</h5>
+
+          <!-- ADMIN -->
+          {% if current_user.has_role('admin') %}
+          <h5 class="card-title mb-0">Nome usuario: {{ current_user.nome }}</h5>
+
+          <div class="container">
+            <div class="row">
+              <div class="col-md-12 mb-4">
+                <a class="btn btn-primary btn-lg float-end" href="{{ url_for('create_contests') }}">Criar concurso</a>
+              </div>
+            </div>
+            <div class="table_outdiv">
+              <table class="table tabela_concurso">
+                <tr>
+                  <th scope="col-s-auto">Nome concurso</th>
+                  <th scope="col-s-auto">Area</th>
+                  <th scope="col-s-auto">Estado</th>
+                  <th scope="col-s-auto">Data Inicio</th>
+                  <th scope="col-s-auto">Data Fim</th>
+                  <th scope="col-s-auto">Data edição</th>
+                  <th scope="col-s-auto">Juri</th>
+                  <th scope="col-s-auto">Formulario</th>
+                  <th scope="col-s-auto">Editar</th>
+                  <th scope="col-s-auto">Visualizar</th>
+                  <th scope="col-s-auto">Eliminar</th>
+                </tr>
+                {% for contest in contests %}
+                <tr>
+                  <td>{{ contest.name }}</td>
+                  <td>{{ contest.area }}</td>
+                  <td>{% if contest.active == True %} <span class="badge bg-success">Ativo</span> {% else %} <span
+                      class="badge bg-warning">Inativo</span> {% endif %}</td>
+                  <td>{{ contest.dateStart.strftime('%d-%m-%Y') }}</td>
+                  <td>{{ contest.dateEnd.strftime('%d-%m-%Y') }}</td>
+                  <td>{{ contest.updatedAt.strftime('%d-%m-%Y %H:%M:%S') }}</td>
+                  <td>{% for juri in contest.juri %} {{juri.nome}} {% endfor %}</td>
+                  <td>
+                    <a href="/formularios/{{contest.id}}"><i class="size-26" data-feather="log-in"></i></a>
+                  </td>
+                  <td>
+                    <a href="/editar/{{contest.id}}"><i class="size-26" data-feather="edit"></i></a>
+                  </td>
+                  <td>
+                    <a href="/visualizar/{{contest.id}}"><i class="size-26" data-feather="eye"></i></a>
+                  </td>
+                  <td>
+                    <a href="/apagar/{{contest.id}}" class="delete_btn"><i class="size-26" data-feather="x"></i></a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </table>
+
+              {% endif %}
+
+              <!-- JURI -->
+              {% if current_user.has_role('juri') %}
+              <h5 class="card-title mb-0">Nome usuario: {{ current_user.nome }}</h5>
+
+              <div class="container">
+                <div class="table_outdiv">
+                  <table class="table tabela_concurso">
+                    <tr>
+                      <th scope="col-s-auto">Nome concurso</th>
+                      <th scope="col-s-auto">Area</th>
+                      <th scope="col-s-auto">Estado</th>
+                      <th scope="col-s-auto">Data Inicio</th>
+                      <th scope="col-s-auto">Data Fim</th>
+                      <th scope="col-s-auto">Formulario</th>
+                    </tr>
+                    {% for contest in contests %}
+                    {% if current_user in contest.juri and contest.active == True %}
+                    <tr>
+                      <td>{{ contest.name }}</td>
+                      <td>{{ contest.area }}</td>
+                      <td>{% if contest.active == True %} <span class="badge bg-success">Ativo</span> {% else %} <span
+                          class="badge bg-warning">Inativo</span> {% endif %}</td>
+                      <td>{{ contest.dateStart.strftime('%d-%m-%Y') }}</td>
+                      <td>{{ contest.dateEnd.strftime('%d-%m-%Y') }}</td>
+                      <td>
+                        <a href="/formularios/{{contest.id}}"><i class="size-26" data-feather="log-in"></i></a>
+                      </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                  </table>
+                </div>
+              </div>
+              {% endif %}
+
+              <!-- USER -->
+              {% if current_user.has_role('user') %}
+              <h5 class="card-title mb-0"> Nome usuario: {{ current_user.nome }}</h5>
+              <br>
+              <div class="container">
+                <div class="table_outdiv">
+                  <table class="table tabela_concurso">
+                    <tr>
+                      <th scope="col-s-auto">Nome concurso</th>
+                      <th scope="col-s-auto">Area</th>
+                      <th scope="col-s-auto">Data Inicio</th>
+                      <th scope="col-s-auto">Data Fim</th>
+                      <th scope="col-s-auto">Participar concurso</th>
+                    </tr>
+                    {% for contest in contests %}
+                    {% if contest.active == True and contest.questions_state == "Submetido" %}
+                    <tr>
+                      <td>{{ contest.name }}</td>
+                      <td>{{ contest.area }}</td>
+                      <td>{{ contest.dateStart.strftime('%d-%m-%Y') }}</td>
+                      <td>{{ contest.dateEnd.strftime('%d-%m-%Y') }}</td>
+                      <td>
+                        <a href="/formularios/respondForm/{{contest.id}}"><i class="size-26" data-feather="log-in"></i></a>
+                      </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                  </table>
+                </div>
+              </div>
+
+
+
+              {% endif %}
+
+              <!-- GUEST -->
+              {% if not current_user.email %}
+              <h5 class="card-title mb-0"> Is guest</h5>
+              {% endif %}
+
+            </div>
+            <div class="card-body">
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endblock body %}
+
+
+      {% block tail %}
+      <script>
+        // timeout alert message
+        $(document).ready(function () {
+          setTimeout(function () {
+            $(".alert").alert('close')
+          }, 3000);
+        });
+
+        //delete contest alert
+        const deleteButton = document.querySelectorAll('.delete_btn');
+        if (deleteButton) {
+          const btnArray = Array.from(deleteButton);
+          btnArray.forEach((btn) => {
+            btn.addEventListener('click', (e) => {
+              if (!confirm('Deseja apagar o concuro?')) {
+                e.preventDefault();
+              }
+            });
+          })
+        }
+      </script>
+      {% endblock tail %}

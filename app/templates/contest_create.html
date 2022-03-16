@@ -1,0 +1,127 @@
+{% extends 'master.html' %}
+
+{% block access_control %}
+    <li class="sidebar-item">
+        <a class="sidebar-link" href="{{ url_for('users') }}">
+          <i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Utilizadores</span>
+        </a>
+    </li>
+    <li class="sidebar-item active">
+        <a class="sidebar-link" href="{{ url_for('contests') }}">
+          <i class="align-middle" data-feather="calendar"></i> <span class="align-middle">Concursos</span>
+        </a>
+    </li>
+    <li class="sidebar-item">
+        <a class="sidebar-link" href="{{ url_for('candidatures') }}">
+          <i class="align-middle" data-feather="edit"></i> <span class="align-middle">Candidaturas</span>
+        </a>
+    </li>
+    <li class="sidebar-item">
+        <a class="sidebar-link" href="{{ url_for('results') }}">
+          <i class="align-middle" data-feather="award"></i> <span class="align-middle">Resultados</span>
+        </a>
+    </li>
+{% endblock %}
+
+{% block body %}
+    <div class="row mb-2 mb-xl-3">
+      <div class="col-auto d-none d-sm-block">
+        <h3>Criar concurso</h3>
+      </div>
+    
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">{{ current_user.email }}</h5>
+
+            <!-- ADMIN -->
+            {% if current_user.has_role('admin') %}
+              <h5 class="card-title mb-0"> Is admin</h5>
+              
+              <div class="row">
+                <div class="col-12">
+                  <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="row mb-3">
+                     {{ form.code.label( class="col-sm-2 col-form-label" )}}
+                     <div class="col-sm-10">
+                     {{ form.code(class="form-control") }}
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        {{ form.name.label( class="col-sm-2 col-form-label" )}}
+                        <div class="col-sm-10">
+                        {{ form.name(class="form-control") }}
+                         </div>
+                       </div>
+
+                       <div class="row mb-3">
+                        {{ form.area.label( class="col-sm-2 col-form-label" )}}
+                        <div class="col-sm-10">
+                        {{ form.area(class="form-control") }}
+                         </div>
+                       </div>
+
+                    <div class="row mb-3">
+                        {{ form.date_start.label( class="col-sm-2 col-form-label" )}}
+                      <div class="col">
+                        {{ form.date_start(class="form-control") }}
+                      </div>
+                        {{ form.date_end.label( class="col-sm-2 col-form-label" )}}
+                      <div class="col text-end ">
+                        {{ form.date_end(class="form-control") }}
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        {{ form.juri.label( class="col-sm-2 col-form-label" ) }}
+                      <div class="col-sm-10">
+                        {{ form.juri(class="form-select") }}
+                      </div>
+                    </div>
+
+                    <div class="row mb-3">
+                      {{ form.active.label( class="col-sm-2 col-form-label" )}}
+                      <div class="col-sm-10">
+                      {{ form.active( class="form-check-input", type="checkbox", id="inlineCheckbox2", value="option2" ) }}
+                       </div>
+                     </div>
+
+                    <div class="col-12">
+                      <a class="btn btn-secondary btn-lg" href="{{ url_for('contests') }}">Retroceder</a>
+                        {{ form.submit(class="btn btn-primary btn-lg") }}
+                    </div> 
+
+                  </form>
+                </div>
+
+                
+              </div>
+            {% endif %}
+
+            <!-- JURI -->
+            {% if current_user.has_role('juri') %}
+              <h5 class="card-title mb-0"> Is juri</h5>
+            {% endif %}
+
+            <!-- USER -->
+            {% if current_user.has_role('user') %}
+              <h5 class="card-title mb-0"> Is user</h5>
+            {% endif %}
+
+            <!-- GUEST -->
+            {% if not current_user.email %}
+              <h5 class="card-title mb-0"> Is guest</h5>
+            {% endif %}
+          </div>
+          <div class="card-body">
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <script>
+  </script>
+{% endblock body %}

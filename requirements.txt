@@ -1,0 +1,8 @@
+WTForms==3.0.1
+Flask==2.0.3
+Flask-SQLAlchemy==2.5.1
+Flask-WTF==1.0.0
+SQLAlchemy==1.4.32
+flask_security==3.0.0
+simplejson==3.17.6
+email-validator==1.1.3

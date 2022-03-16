@@ -1,0 +1,134 @@
+{% extends 'master.html' %}
+
+{% block access_control %}
+<li class="sidebar-item">
+    <a class="sidebar-link" href="{{ url_for('users') }}">
+        <i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Utilizadores</span>
+    </a>
+</li>
+<li class="sidebar-item active">
+    <a class="sidebar-link" href="{{ url_for('contests') }}">
+        <i class="align-middle" data-feather="calendar"></i> <span class="align-middle">Concursos</span>
+    </a>
+</li>
+<li class="sidebar-item">
+    <a class="sidebar-link" href="{{ url_for('candidatures') }}">
+        <i class="align-middle" data-feather="edit"></i> <span class="align-middle">Candidaturas</span>
+    </a>
+</li>
+<li class="sidebar-item">
+    <a class="sidebar-link" href="{{ url_for('results') }}">
+        <i class="align-middle" data-feather="award"></i> <span class="align-middle">Resultados</span>
+    </a>
+</li>
+{% endblock %}
+
+{% block body %}
+<div class="row mb-2 mb-xl-3">
+    <div class="col-auto d-none d-sm-block">
+        <h3>Criar formulário</h3>
+    </div>
+
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-primary float-none" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">{{ current_user.email }}</h5>
+
+                <!-- ADMIN -->
+                {% if current_user.has_role('admin') %}
+                    <h5 class="card-title mb-0"> Is admin</h5>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-10 mb-4">
+                                <a class="btn btn-light btn-lg float-end" id="submitFormBtn">Submeter</a>
+                            </div>
+                            <div class="col-md-2 mb-4">
+                                <a class="btn btn-primary btn-lg " id="saveFormBtn">Guardar</a>
+                            </div>
+                        </div>
+                        <div class="question-container">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button type="button" class="btn btn-primary" id="new-question1" data-toggle="modal">Pergunta Livre</button>
+                                    <button type="button" class="btn btn-primary" id="new-question2" data-toggle="modal">Escolha Múltlipla</button>
+                                    <button type="button" class="btn btn-primary" id="new-question3" data-toggle="modal">Adicionar Ficheiro</button>
+                                </div>
+                            </div>
+                        </div>
+                        <form method="post">
+                            <div id='card-requirements' class="list-group-item">
+                                <div id="container">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                {% endif %}
+
+
+                <!-- JURI -->
+                {% if current_user.has_role('juri') %}
+                    <h5 class="card-title mb-0"> Is juri</h5>
+
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-10 mb-4">
+                                <a class="btn btn-light btn-lg float-end" id="submitFormBtn">Submeter</a>
+                            </div>
+                            <div class="col-md-2 mb-4">
+                                <a class="btn btn-primary btn-lg " id="saveFormBtn">Guardar</a>
+                            </div>
+                        </div>
+                        <div class="question-container">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button type="button" class="btn btn-primary" id="new-question1" data-toggle="modal">Pergunta Livre</button>
+                                    <button type="button" class="btn btn-primary" id="new-question2" data-toggle="modal">Escolha Múltlipla</button>
+                                    <button type="button" class="btn btn-primary" id="new-question3" data-toggle="modal">Adicionar Ficheiro</button>
+                                </div>
+                            </div>
+                        </div>
+                        <form method="post">
+                            <div id="card-requirements" class="list-group-item" >
+                                <div id="container">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                {% endif %}
+
+                <!-- USER -->
+                {% if current_user.has_role('user') %}
+                <h5 class="card-title mb-0"> Is user</h5>
+                {% endif %}
+
+                <!-- GUEST -->
+                {% if not current_user.email %}
+                <h5 class="card-title mb-0"> Is guest</h5>
+                {% endif %}
+            </div>
+        </div>    
+    </div>
+</div>
+</div>
+
+
+
+<!-- JavaScript link -->
+<script src="{{url_for('static', filename='js/users.js')}}"></script>
+<script src="{{url_for('static', filename='js/forms.js')}}"></script>
+<script src="{{url_for('static', filename='js/dragula.min.js')}}"></script>
+<script>
+    dragula([document.getElementById("container")], {
+        removeOnSpill: false
+    });
+</script>
+
+
+{% endblock body %}
