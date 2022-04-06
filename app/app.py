@@ -1,4 +1,5 @@
 import os
+from functools import wraps
 
 import simplejson
 from flask import (
@@ -8,7 +9,7 @@ from flask import (
     url_for,
     flash,
     request,
-    jsonify,
+    jsonify, g,
 )
 from flask_security import (
     Security,
@@ -42,8 +43,10 @@ security = Security(app, user_datastore)
 @app.route("/uploadfile", methods=["POST", "GET"])
 def align():
     if request.method == "POST":
-        f = request.files["file"]
-        f.save(os.path.join(UPLOAD_FOLDER, (f.filename)))
+        f = request.files.get("file")
+        if not f:
+            return "File not sent", 400
+        f.save(os.path.join(UPLOAD_FOLDER, f.filename))
         return "File saved successfully"
     if request.method == "GET":
         return "ERROR!"
@@ -77,7 +80,7 @@ def users():
 @app.route("/concursos")
 @login_required
 def contests():
-    contests = Contest.query.all()
+    contests = Contest.query.order_by(Contest.id.desc()).all()
     return render_template("contests.html", contests=contests)
 
 
@@ -201,15 +204,41 @@ def delete_contest(id):
         return redirect("/concursos")
 
 
+def any_roles_required(roles):
+    if isinstance(roles, str):
+        roles = [roles]
+
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            user: User = g.identity.user
+            if not user or not user.has_any_roles(roles):
+                return "no role", 400
+            else:
+                return func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
+
+
 @app.route("/formularios/criar/<int:id>", methods=["GET", "POST"])
 @login_required
+@any_roles_required(["juri", "admin"])
 def forms_create(id):
+    contest = db.session.query(Contest).filter((Contest.id == id)).first()
+    if contest.active:
+        return "cannot edit active contest", 400
+    user = g.identity.user
+    if user not in contest.juri and not user.has_role('admin'):
+        return "this juri cannot edit this contest", 400
     return render_template("forms_create.html")
 
 
 @app.route("/formularios/<int:id>")
 @login_required
 def forms(id):
+    # todo lista de formularios, so está a ir buscar o 1º
     chosen_contest = db.session.query(Contest).filter((Contest.id == id)).first()
     numero_perguntas = db.session.query(Question).filter(Question.contest_id == id).count()
     return render_template("forms.html", chosen_contest=chosen_contest, numero_perguntas=numero_perguntas)
@@ -220,13 +249,13 @@ def forms(id):
 def insert_form_guardar():
     if request.method == "POST":
 
-        question = request.get_json()  # silent=True, force=True
-        questons_to_delete = db.session.query(Question).filter(Question.contest_id == question[0]["contest_id"]).all()
+        questions = request.get_json()  # silent=True, force=True
+        questons_to_delete = db.session.query(Question).filter(Question.contest_id == questions[0]["contest_id"]).all()
         for q in questons_to_delete:
             db.session.delete(q)
-            db.session.flush()
+        db.session.flush()
 
-        for line in question:
+        for line in questions:
             lineq = Question(
                 contest_id=line.get("contest_id"),
                 type=line.get("type"),
@@ -241,9 +270,9 @@ def insert_form_guardar():
         chosen_contest.questions_state = "Criado"
         db.session.add(chosen_contest)
         db.session.commit()
-        print(question)
+        print(questions)
         flash("Formulario criado e guardado com sucesso")
-        return jsonify(question)
+        return jsonify(questions)
     else:
         return jsonify(message="Bad method", category="error", status=404)
 

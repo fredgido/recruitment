@@ -1,0 +1,15 @@
+version: "3"
+
+services:
+  web:
+    build:
+      context: .
+      args:
+        REQUIREMENTS: requirements.txt
+    #command: sleep infinity
+    env_file:
+      - .env
+    volumes:
+      - .:/project
+    ports:
+      - ${WEB_PORT:-5000}:5000

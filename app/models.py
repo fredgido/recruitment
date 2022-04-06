@@ -35,6 +35,12 @@ class User(db.Model, UserMixin):
                 return True
         return False
 
+    def has_any_roles(self, roles):
+        for role in self.roles:
+            if role.name in roles:
+                return True
+        return False
+
 
 class Role(db.Model, RoleMixin):
     id = db.Column(db.Integer(), primary_key=True)
