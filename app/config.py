@@ -15,7 +15,7 @@ env.read_env(str(env_path))
 
 class Config:
     SQLALCHEMY_DATABASE_URI = env("DATABASE_URI")
-    SERVER_NAME = "0.0.0.0:5000"
+    SERVER_NAME = None #"0.0.0.0:5000"
 
     SECRET_KEY = env("DATABASE_URI", "mysecret")
     SQLALCHEMY_TRACK_MODIFICATIONS = False

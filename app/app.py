@@ -25,6 +25,7 @@ from wtforms.fields.datetime import DateField
 from wtforms.fields.simple import BooleanField
 from wtforms.validators import DataRequired
 
+from config import env
 from models import User, Role, Contest, Question, Answer
 
 UPLOAD_FOLDER = "/uploads"
@@ -425,4 +426,4 @@ def internal_error(error):
 """
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host=env("HOST", "0.0.0.0"), port=env("PORT", "80"), debug=True)
